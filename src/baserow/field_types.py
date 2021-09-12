@@ -8,7 +8,6 @@ from databind.core.annotations import union
 from .types import TableField
 
 
-
 class NumberType(enum.Enum):
   INTEGER = enum.auto()
   DECIMAL = enum.auto()

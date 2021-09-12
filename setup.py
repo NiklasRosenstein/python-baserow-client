@@ -17,6 +17,9 @@ else:
 
 requirements = [
   'requests >=2.26.0,<3.0.0',
+  'databind.core >=1.2.1,<2.0.0',
+  'databind.json >=1.2.1,<2.0.0',
+  'typing-extensions >=3.10.0.0,<4.0.0',
 ]
 
 setuptools.setup(

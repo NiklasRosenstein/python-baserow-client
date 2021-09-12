@@ -1,0 +1,5 @@
+changes:
+- type: fix
+  component: general
+  description: add missing dependencies
+  fixes: []
