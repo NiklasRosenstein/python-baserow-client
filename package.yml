@@ -1,5 +1,5 @@
 name: baserow-client
-version: 0.0.0
+version: 0.1.0
 author: Niklas Rosenstein <rosensteinniklas@gmail.com>
 modulename: baserow
 description: Client for the baserow.io API.

@@ -21,7 +21,7 @@ requirements = [
 
 setuptools.setup(
   name = 'baserow-client',
-  version = '0.0.0',
+  version = '0.1.0',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Client for the baserow.io API.',
