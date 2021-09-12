@@ -3,6 +3,8 @@ version: 0.0.0
 author: Niklas Rosenstein <rosensteinniklas@gmail.com>
 modulename: baserow
 description: Client for the baserow.io API.
+url: https://github.com/NiklasRosenstein/python-baserow-client
+license: MIT
 requirements:
 - python ^3.8
 - requests ^2.26.0
