@@ -53,7 +53,7 @@ class Filter:
     elif self.value is None:
       value = None
     else:
-      value = self._value
+      value = self.value
     return (key, value)
 
 

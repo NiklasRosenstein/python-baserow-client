@@ -5,7 +5,7 @@ import databind.json
 import requests
 
 from .filter import Filter, FilterType
-from .types import Application, OrderedGroup, Table, TableField, User
+from .types import Application, Page, PermissionedOrderedGroup, Table, TableField, User
 
 
 class BaseClient:
@@ -13,13 +13,12 @@ class BaseClient:
   def __init__(self, url: str, token: str) -> None:
     self._url = url.rstrip('/')
     self._session = requests.Session()
-    self._session.headers['Authorization'] = f'Bearer {token}'
+    self._session.headers['Authorization'] = f'JWT {token}'
 
   def _request(self, method: str, path: str, **kwargs) -> requests.Response:
     response = self._session.request(method, self._url + '/' + path.lstrip('/'), **kwargs)
     response.raise_for_status()
     return response
-
 
 
 class BaserowClient(BaseClient):
@@ -43,13 +42,13 @@ class BaserowClient(BaseClient):
     response = self._request('POST', '/api/user/token-refresh/', json=payload).json()
     return databind.json.load(response['user'], User), response['token']
 
-  def list_groups(self) -> t.List[OrderedGroup]:
+  def list_groups(self) -> t.List[PermissionedOrderedGroup]:
     response = self._request('GET', '/api/groups/').json()
-    return databind.json.load(response, t.List[OrderedGroup])
+    return databind.json.load(response, t.List[PermissionedOrderedGroup])
 
-  def create_group(self, name: str) -> OrderedGroup:
+  def create_group(self, name: str) -> PermissionedOrderedGroup:
     response = self._request('POST', '/api/groups/', json={'name': name}).json()
-    return databind.json.load(response, OrderedGroup)
+    return databind.json.load(response, PermissionedOrderedGroup)
 
   def list_all_applications(self) -> t.List[Application]:
     response = self._request('GET', '/api/applications/').json()
@@ -64,11 +63,11 @@ class BaserowClient(BaseClient):
     return databind.json.load(response, Table)
 
   def list_database_tables(self, database_id: int) -> t.List[Table]:
-    response = self._request('PATCH', f'/api/database/tables/database/{database_id}').json()
+    response = self._request('GET', f'/api/database/tables/database/{database_id}').json()
     return databind.json.load(response, t.List[Table])
 
   def list_database_table_fields(self, table_id: int) -> t.List[TableField]:
-    response = self._request('PATCH', f'/api/database/fields/table/{table_id}').json()
+    response = self._request('GET', f'/api/database/fields/table/{table_id}').json()
     return databind.json.load(response, t.List[TableField])
 
   def list_database_table_rows(
@@ -83,7 +82,7 @@ class BaserowClient(BaseClient):
     search: t.Optional[str] = None,
     size: t.Optional[int] = None,
     user_field_names: bool = False,
-  ) -> t.Dict[str, t.Any]:
+  ) -> Page[t.Dict[str, t.Any]]:
 
     params = {}
     if exclude is not None:
@@ -105,4 +104,12 @@ class BaserowClient(BaseClient):
     if user_field_names:
       params['user_field_names'] = True
 
-    return self._request('GET', f'/api/database/rows/table/{table_id}/', params=params)
+    response = self._request('GET', f'/api/database/rows/table/{table_id}/', params=params).json()
+    if page is None:
+      page = 1
+
+    return Page(
+      response['count'],
+      page - 1 if page > 1 else None,
+      page + 1 if response['next'] else None,
+      response['results'])
