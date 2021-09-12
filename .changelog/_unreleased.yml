@@ -7,3 +7,7 @@ changes:
   component: general
   description: support `boolean`, `long_text` and `file` fields
   fixes: []
+- type: feature
+  component: general
+  description: add simple ORM capabilities
+  fixes: []
