@@ -1,0 +1,5 @@
+changes:
+- type: feature
+  component: general
+  description: add `BaserowClient.login()`, `BaserowClient.load()` and `BaserowClient.save()`
+  fixes: []

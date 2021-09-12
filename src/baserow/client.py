@@ -1,12 +1,18 @@
 
 import dataclasses
+import json
+import logging
 import typing as t
+from pathlib import Path
 
 import databind.json
 import requests
 
 from .filter import Filter, FilterType
 from .types import Application, Page, PermissionedOrderedGroup, Table, TableField, User
+
+log = logging.getLogger(__name__)
+DEFAULT_CREDENTIALS_FILE = '.baserow-creds.json'
 
 
 @dataclasses.dataclass
@@ -19,19 +25,56 @@ class ApiError(Exception):
 
 
 class BaseClient:
+  """
+  Base class for the Baserow client which handles the authentication and request session.
 
-  def __init__(self, url: str, token: str) -> None:
+  A JWT is needed when performing requests that are scoped to user interactions (e.g. operations that
+  are expected to be run through the UI). A token should be used if only a subset of the Baserow API
+  is used to create/read/write/delete rows.
+  """
+
+  def __init__(self, url: str, token: t.Optional[str] = None, jwt: t.Optional[str] = None) -> None:
+    if token and jwt:
+      raise ValueError(f'token/jwt can not be specified at the same time')
+
     self._url = url.rstrip('/')
     self._session = requests.Session()
-    self._session.headers['Authorization'] = f'JWT {token}'
+    self._jwt: t.Optional[str] = None
+    self._token: t.Optional[str] = None
+
+    if jwt:
+      self.jwt = jwt
+    elif token:
+      self.token = token
 
   def _request(self, method: str, path: str, **kwargs) -> requests.Response:
     response = self._session.request(method, self._url + '/' + path.lstrip('/'), **kwargs)
     if (response.status_code // 100) in (4, 5) and response.headers.get('Content-Type') == 'application/json':
       data = response.json()
-      raise ApiError(data['error'], data['detail'])
+      log.debug('Error from %s %s: %s', method, path, data)
+      raise ApiError(data.get('error', 'UNKNOWN'), data.get('detail', '???'))
     response.raise_for_status()
     return response
+
+  @property
+  def jwt(self) -> t.Optional[str]:
+    return self._jwt
+
+  @jwt.setter
+  def jwt(self, jwt: str) -> None:
+    self._jwt = jwt
+    self._token = None
+    self._session.headers['Authorization'] = f'JWT {jwt}'
+
+  @property
+  def token(self) -> t.Optional[str]:
+    return self._token
+
+  @token.setter
+  def token(self, token: str) -> None:
+    self._jwt = None
+    self._token = token
+    self._session.headers['Authorization'] = f'Token {token}'
 
 
 class BaserowClient(BaseClient):
@@ -54,6 +97,68 @@ class BaserowClient(BaseClient):
     payload = {'token': token}
     response = self._request('POST', '/api/user/token-refresh/', json=payload).json()
     return databind.json.load(response['user'], User), response['token']
+
+  def login(self, username: str, password: str, cache: t.Union[bool, str] = False) -> User:
+    """
+    A convenience method to log into Baserow using the specified *username* and *password* and updating
+    the current client object. If *cache* is enabled or is a filename, it will be used to load a cached
+    token for the Baserow URL and username combination to reuse a previously generated JWT. If the reused
+    JWT is not valid anymore, the credentials will be used to generate a new one.
+    """
+
+    cache_fn = cache if isinstance(cache, str) else None
+    if cache:
+      user = self.load(username, cache_fn)
+      if user:
+        return user
+
+    log.info('Creating new JWT')
+    user, self.jwt = self.token_auth(username, password)
+    if cache:
+      self.save(username, cache_fn)
+    return user
+
+  def load(self, username: str, filename: t.Optional[str] = None, raise_: bool = False, refresh: bool = True) -> t.Optional[User]:
+    """
+    Loads an existing JWT from the given *filename* or the #DEFAULT_CREDENTIALS_FILE. Returns #True if a token
+    was loaded, #False otherwise. If a token is loaded, it will be immediately refreshed.
+    """
+
+    path = Path(filename or DEFAULT_CREDENTIALS_FILE)
+    if not path.exists():
+      if raise_:
+        raise FileNotFoundError(path)
+      return None
+
+    try:
+      data = json.loads(path.read_text())
+    except json.JSONDecodeError:
+      log.error('Unable to parse JSON file %s', path)
+      if raise_:
+        raise
+      return None
+
+    jwt = data.get(self._url, {}).get(username)
+    if jwt:
+      log.info('Refreshing JWT')
+      user, self.jwt = self.token_refresh(jwt)
+      self.save(username, filename)
+      return user
+
+    return None
+
+  def save(self, username: str, filename: t.Optional[str] = None) -> None:
+    """
+    Saves the JWt of the client into *filename* or the given #DEFAULT_CREDENTIALS_FILE.
+    """
+
+    if not self.jwt:
+      raise ValueError(f'No JWT set')
+
+    path = Path(filename or DEFAULT_CREDENTIALS_FILE)
+    data = json.loads(path.read_text()) if path.exists() else {}
+    data.setdefault(self._url, {})[username] = self.jwt
+    path.write_text(json.dumps(data, indent=2))
 
   def list_groups(self) -> t.List[PermissionedOrderedGroup]:
     response = self._request('GET', '/api/groups/').json()
