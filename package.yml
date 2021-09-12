@@ -1,0 +1,8 @@
+name: baserow-client
+version: 0.0.0
+author: Niklas Rosenstein <rosensteinniklas@gmail.com>
+modulename: baserow
+description: Client for the baserow.io API.
+requirements:
+- python ^3.8
+- requests ^2.26.0
