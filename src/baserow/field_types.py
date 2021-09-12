@@ -26,6 +26,11 @@ class TextTableField(TableField):
   text_default: str
 
 
+@union.subtype(TableField, 'long_text')
+@dataclasses.dataclass
+class LongTextTableField(TableField): pass
+
+
 @union.subtype(TableField, 'number')
 @dataclasses.dataclass
 class NumberTableField(TableField):
@@ -51,3 +56,13 @@ class UrlTableField(TableField):
 class LinkRowTableField(TableField):
   link_row_table: int
   link_row_related_field: int
+
+
+@union.subtype(TableField, 'boolean')
+@dataclasses.dataclass
+class BooleanTableField(TableField): pass
+
+
+@union.subtype(TableField, 'file')
+@dataclasses.dataclass
+class FileTableField(TableField): pass

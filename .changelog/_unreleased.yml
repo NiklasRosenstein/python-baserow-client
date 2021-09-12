@@ -3,3 +3,7 @@ changes:
   component: general
   description: add `BaserowClient.login()`, `BaserowClient.load()` and `BaserowClient.save()`
   fixes: []
+- type: feature
+  component: general
+  description: support `boolean`, `long_text` and `file` fields
+  fixes: []
