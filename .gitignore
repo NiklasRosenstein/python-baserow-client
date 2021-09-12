@@ -4,4 +4,6 @@ build/
 *.py[cod]
 *.egg-info
 *.egg
-.baserow-creds.json
+/.baserow-creds.json
+/mapping.json
+/test.py
