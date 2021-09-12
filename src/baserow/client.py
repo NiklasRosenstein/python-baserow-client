@@ -1,4 +1,5 @@
 
+import dataclasses
 import typing as t
 
 import databind.json
@@ -6,6 +7,15 @@ import requests
 
 from .filter import Filter, FilterType
 from .types import Application, Page, PermissionedOrderedGroup, Table, TableField, User
+
+
+@dataclasses.dataclass
+class ApiError(Exception):
+  error: str
+  detail: str
+
+  def __str__(self) -> None:
+    return f'{self.error}: {self.detail}'
 
 
 class BaseClient:
@@ -17,6 +27,9 @@ class BaseClient:
 
   def _request(self, method: str, path: str, **kwargs) -> requests.Response:
     response = self._session.request(method, self._url + '/' + path.lstrip('/'), **kwargs)
+    if (response.status_code // 100) in (4, 5) and response.headers.get('Content-Type') == 'application/json':
+      data = response.json()
+      raise ApiError(data['error'], data['detail'])
     response.raise_for_status()
     return response
 
@@ -113,3 +126,37 @@ class BaserowClient(BaseClient):
       page - 1 if page > 1 else None,
       page + 1 if response['next'] else None,
       response['results'])
+
+  def paginated_database_table_rows(
+    self,
+    table_id: int,
+    exclude: t.Optional[t.List[str]] = None,
+    filter: t.List[t.List[Filter]] = None,
+    filter_type: t.Optional[FilterType] = None,
+    include: t.Optional[t.List[str]] = None,
+    order_by: t.Optional[t.List[str]] = None,
+    page: t.Optional[int] = None,
+    search: t.Optional[str] = None,
+    size: t.Optional[int] = None,
+    user_field_names: bool = False,
+  ) -> t.Generator[Page[t.Dict[str, t.Any]], None, None]:
+
+    page_number = None
+    while True:
+      page = self.list_database_table_rows(
+        table_id=table_id,
+        exclude=exclude,
+        filter=filter,
+        filter_type=filter_type,
+        include=include,
+        order_by=order_by,
+        page=page_number,
+        search=search,
+        size=size,
+        user_field_names=user_field_names,
+      )
+      if page.results:
+        yield page
+      if not page.next:
+        break
+      page_number = page.next
