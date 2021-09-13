@@ -97,6 +97,9 @@ You can specify `--password '...'` to avoid the password prompt, or directly pas
 
 __Database connection__
 
+The database connection must be initialized with a Baserow client and the database mapping that was generated
+in the previous step. Since the ORM can only perform CRUD operations, a long-lived token can (or should) be used.
+
 ```py
 # myapp/__main__.py
 
@@ -106,10 +109,22 @@ from .models import Product, Customer
 
 client = BaserowClient('https://baserow.io', token='...')
 db = Database(client, DatabaseMapping.load('var/data/mapping.json'))
+```
 
-alice = list(db.select(Customer).filter(Customer.name.contains('Alice')))[0]
+__ORM queries__
+
+When querying rows from Baserow with the ORM interface, you are working with instances of the `Model` subclasses
+that you have defined previously. Linked rows are queried lazily (i.e. iterating over `Customer.favorite_products`
+will fetch each linked `Product` from Baserow).
+
+> Note: Fetching linked rows currently happens individually and can thus be rather slow. More information at
+> [baserow#601](https://gitlab.com/bramw/baserow/-/issues/601).
+
+```py
+query = db.select(Customer).filter(Customer.name.contains('Alice'))
+
 print('Alice likes:')
-for product in alice.favorite_products:
+for product in query.first().favorite_products:
   print(f'- {product.name}')
 ```
 
