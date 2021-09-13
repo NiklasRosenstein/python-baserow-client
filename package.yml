@@ -1,5 +1,5 @@
 name: baserow-client
-version: 0.1.1
+version: 0.2.0
 author: Niklas Rosenstein <rosensteinniklas@gmail.com>
 license: MIT
 url: https://github.com/NiklasRosenstein/python-baserow-client

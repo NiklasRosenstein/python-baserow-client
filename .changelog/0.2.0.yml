@@ -19,3 +19,4 @@ changes:
   component: general
   description: add `Column.link_row_has()` and `Column.link_row_has_not()`
   fixes: []
+release_date: '2021-09-13'
