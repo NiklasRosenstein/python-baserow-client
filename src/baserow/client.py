@@ -98,6 +98,27 @@ class BaserowClient(BaseClient):
     response = self._request('POST', '/api/user/token-refresh/', json=payload).json()
     return databind.json.load(response['user'], User), response['token']
 
+  def create_user(
+    self,
+    name: str,
+    email: str,
+    password: str,
+    authenticate: t.Optional[bool] = False,
+    group_invitation_token: t.Optional[str] = None,
+    template_id: t.Optional[int] = None
+  ) -> t.Tuple[User, str]:
+
+    payload = {'name': name, 'email': email, 'password': password}
+    if authenticate:
+      payload['authenticate'] = authenticate
+    if group_invitation_token:
+      payload['group_invitation_token'] = group_invitation_token
+    if template_id:
+      payload['template_id'] = template_id
+
+    response = self._request('POST', '/api/user/', json=payload).json()
+    return databind.json.load(response['user'], User), response.get('token')
+
   def list_groups(self) -> t.List[PermissionedOrderedGroup]:
     response = self._request('GET', '/api/groups/').json()
     return databind.json.load(response, t.List[PermissionedOrderedGroup])
