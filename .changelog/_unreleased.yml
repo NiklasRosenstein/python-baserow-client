@@ -11,3 +11,7 @@ changes:
   component: general
   description: add simple ORM capabilities
   fixes: []
+- type: feature
+  component: general
+  description: add `BaserowClient.get_database_table_row()`
+  fixes: []
