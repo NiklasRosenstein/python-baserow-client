@@ -117,9 +117,6 @@ When querying rows from Baserow with the ORM interface, you are working with ins
 that you have defined previously. Linked rows are queried lazily (i.e. iterating over `Customer.favorite_products`
 will fetch each linked `Product` from Baserow).
 
-> Note: Fetching linked rows currently happens individually and can thus be rather slow. More information at
-> [baserow#601](https://gitlab.com/bramw/baserow/-/issues/601).
-
 ```py
 query = db.select(Customer).filter(Customer.name.contains('Alice'))
 
@@ -127,6 +124,10 @@ print('Alice likes:')
 for product in query.first().favorite_products:
   print(f'- {product.name}')
 ```
+
+> Note: Fetching linked rows currently happens individually and can thus be rather slow. More information at
+> [baserow#601](https://gitlab.com/bramw/baserow/-/issues/601). You can still access the raw `(id, name)` pairs
+> returned by the Baserow API for the original object via `alice.favorite_products.raw`).
 
 ---
 

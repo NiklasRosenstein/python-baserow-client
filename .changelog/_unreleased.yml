@@ -1,0 +1,5 @@
+changes:
+- type: feature
+  component: general
+  description: add `Query.first()`, `BaserowOrmException` and `NoRowReturned`
+  fixes: []

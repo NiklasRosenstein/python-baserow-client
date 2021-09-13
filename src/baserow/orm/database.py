@@ -5,6 +5,7 @@ from ..client import BaserowClient
 from ..filter import Filter, ValueType
 from ..types import Page
 from .column import ForeignKey
+from .exc import NoRowReturned
 from .mapping import DatabaseMapping
 from .model import Model
 
@@ -75,6 +76,7 @@ class Query(t.Generic[T_Model]):
     self._model = model
     self._mapping = db._mapping.models[model.__id__]
     self._filters: t.List[Filter] = []
+    self._page_size = None
     self._paginator: t.Optional[t.Generator[Page[t.Dict[str, str]]]] = None
     self._page_items: t.Optional[t.Iterator[Page[t.Dict[str, str]]]] = None
 
@@ -103,9 +105,31 @@ class Query(t.Generic[T_Model]):
       filter=self._filters)
 
   def filter(self, *filters: Filter) -> 'Query[T_Model]':
+    if self._paginator is not None:
+      raise RuntimeError('Query has already been evaluated')
     for filter in filters:
       self._filters.append(self._db._preprocess_filter(filter))
     return self
+
+  def page_size(self, page_size: int) -> 'Query[T_Model]':
+    if self._paginator is not None:
+      raise RuntimeError('Query has already been evaluated')
+    self._page_size = page_size
+    return self
+
+  def first(self) -> T_Model:
+    """
+    Returns the first object from the query, or raises a #NoRowReturned exception.
+    """
+
+    if self._paginator is not None:
+      raise RuntimeError('Query has already been evaluated')
+
+    self.page_size(1)
+    try:
+      return next(self)
+    except StopIteration:
+      raise NoRowReturned
 
 
 class LinkedTableCollection(t.Sequence[T_Model]):
