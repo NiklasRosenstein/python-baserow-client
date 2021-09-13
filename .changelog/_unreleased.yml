@@ -15,3 +15,7 @@ changes:
   component: general
   description: add `BaserowClient.get_database_table_row()`
   fixes: []
+- type: feature
+  component: general
+  description: add `Column.link_row_has()` and `Column.link_row_has_not()`
+  fixes: []

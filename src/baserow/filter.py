@@ -113,11 +113,11 @@ class Column:
   def single_select_not_equal(self, value: str) -> None:
     return Filter(self._name, FilterMode.single_select_not_equal, value)
 
-  # def link_row_has(self, value: ValueType) -> None:
-  #   return Filter(self._name, FilterMode.link_row_has, value)
+  def link_row_has(self, value: int) -> None:
+    return Filter(self._name, FilterMode.link_row_has, value)
 
-  # def link_row_has_not(self, value: ValueType) -> None:
-  #   return Filter(self._name, FilterMode.link_row_has_not, value)
+  def link_row_has_not(self, value: int) -> None:
+    return Filter(self._name, FilterMode.link_row_has_not, value)
 
   # def boolean(self, value: ValueType) -> None:
   #   return Filter(self._name, FilterMode.boolean, value)
