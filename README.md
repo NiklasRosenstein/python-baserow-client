@@ -52,7 +52,7 @@ for field in client.list_database_table_fields(45):
 These operations do not require a JWT and can be performed with a long-lived token instead, which can be created
 from the Baserow UI. The Baserow Python client currently supports reading data only.
 
-__Examples__
+__Example__
 
 ```py
 is_john_smith = Column('field_281').equal('John Smith')
@@ -107,10 +107,10 @@ from .models import Product, Customer
 client = BaserowClient('https://baserow.io', token='...')
 db = Database(client, DatabaseMapping.load('var/data/mapping.json'))
 
-for customer in db.select(Customer).filter(customer.name.contains('Alice')):
-  print(f'{customer.name} likes:')
-  for product in customer.favorite_products:
-    print(f'- {product.name}')
+alice = list(db.select(Customer).filter(Customer.name.contains('Alice')))[0]
+print('Alice likes:')
+for product in alice.favorite_products:
+  print(f'- {product.name}')
 ```
 
 ---
