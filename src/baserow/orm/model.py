@@ -14,10 +14,13 @@ class Model:
 
   id: t.Optional[int]
   __id__: t.ClassVar[str]
+  __tablename__: t.ClassVar[t.Optional[str]]
   __columns__: t.ClassVar[t.Dict[str, Column]]
 
   def __init_subclass__(cls) -> None:
     cls.__columns__ = {}
+    if '__tablename__' not in vars(cls):
+      cls.__tablename__ = None
 
     if not hasattr(cls, '__id__'):
       cls.__id__ = cls.__module__ + '.' + cls.__name__

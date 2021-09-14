@@ -5,8 +5,10 @@ import importlib
 import json
 import typing as t
 
+from baserow.orm.model import Model
+
 from ..client import BaserowClient
-from .mapping import DatabaseMapping, ModelMappingDescription
+from .mapping import DatabaseMapping, ModelMappingDescription, generate_mapping
 
 parser = argparse.ArgumentParser()
 parser.add_argument('dbname', help='The database name to use.')
@@ -33,13 +35,20 @@ def main():
 
   models = []
   for spec in args.models:
-    model_id, table_name = spec.split(':')
+    if ':' in spec:
+      model_id, table_name = spec.split(':')
+    else:
+      model_id = spec
+      table_name = None
     module_name, class_name = model_id.rpartition('.')[::2]
     module = importlib.import_module(module_name)
-    model = getattr(module, class_name)
-    models.append(ModelMappingDescription(model_id, model.__columns__, table_name, {}))
+    model: t.Type[Model] = getattr(module, class_name)
+    if table_name:
+      models.append(ModelMappingDescription(model_id, model.__columns__, table_name, {}))
+    else:
+      models.append(model)
 
-  mapping = DatabaseMapping.generate(client, args.dbname, *models)
+  mapping = generate_mapping(client, args.dbname, *models)
   if args.write_to:
     mapping.save(args.write_to)
   else:

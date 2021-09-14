@@ -1,0 +1,17 @@
+changes:
+- type: change
+  component: general
+  description: rename `LinkedTableCollection` to `LinkedRow` and moved it to `baserow.orm.column`
+  fixes: []
+- type: change
+  component: general
+  description: add `Column.from_baserow()`
+  fixes: []
+- type: change
+  component: general
+  description: add `ColumnPlaceholderTranslator` helper class
+  fixes: []
+- type: docs
+  component: general
+  description: add a bunch of docstrings to the ORM classes
+  fixes: []

@@ -5,4 +5,7 @@ class BaserowOrmException(Exception):
 
 
 class NoRowReturned(BaserowOrmException):
-  pass
+  """
+  This exception is raised by the #Query class if at least one row was expected but none was returned
+  by the Baserow API.
+  """
