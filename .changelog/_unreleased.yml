@@ -15,3 +15,8 @@ changes:
   component: general
   description: add a bunch of docstrings to the ORM classes
   fixes: []
+- type: feature
+  component: general
+  description: add `BaserowClient.create_database_table_row()`, `BaserowClient.update_database_table_row()`
+    and `Database.save()`
+  fixes: []

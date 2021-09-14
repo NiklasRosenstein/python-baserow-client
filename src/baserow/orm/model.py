@@ -39,12 +39,12 @@ class Model:
     if 'id' in cls.__columns__:
       raise ValueError(f'attribute name "id" is reserved')
 
-  def __init__(self, id: t.Optional[int], **kwargs) -> None:
+  def __init__(self, id: t.Optional[int] = None, **kwargs) -> None:
     self.id = id
     for key, col in self.__columns__.items():
       if key not in kwargs:
         raise TypeError(f'{type(self).__name__}(): missing keyword argument {key!r}')
-      setattr(self, key, kwargs[key])
+      setattr(self, key, col.from_python(kwargs[key]))
     for key in kwargs:
       if key not in self.__columns__:
         raise TypeError(f'{type(self).__name__}(): unrecognized keyword argument {key!r}')

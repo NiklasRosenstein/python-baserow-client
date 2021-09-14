@@ -63,6 +63,20 @@ class Column(_Column):
 
     return value
 
+  def to_baserow(self, value: t.Any) -> t.Any:
+    """
+    Convert a value stored on a model instance to JSON format for a request to Baserow.
+    """
+
+    return value
+
+  def from_python(self, value: t.Any) -> t.Any:
+    """
+    Convert a value assigned to the row from Python.
+    """
+
+    return value
+
   @property
   def id(self) -> str:
     """
@@ -96,6 +110,24 @@ class ForeignKey(Column):
     refs = [Ref(x['id'], x['value']) for x in value]
     return LinkedRow(db, self._model, refs)
 
+  def to_baserow(self, value: t.Any) -> t.Any:
+    assert isinstance(value, LinkedRow)
+    return [r.id for r in value.refs]
+
+  def from_python(self, value: t.Any) -> t.Any:
+    if not isinstance(value, t.Collection):
+      raise TypeError(f'expected collection for column {self.name}')
+    value_list = list(value)
+    for item in value_list:
+      if not isinstance(item, self._model):
+        raise TypeError(f'expeted {self._model.__id__!r} instance for column {self.name}')
+    # TODO (@NiklasRosenstein): Need to know which is the primary column in the model
+    if value:
+      raise NotImplementedError
+    primary_col = ...
+    refs = [Ref(x.id, getattr(x, primary_col)) for x in value]
+    return LinkedRow(None, self._model, refs, {x.id: x for x in value_list})
+
   @property
   def model(self) -> t.Type['Model']:
     if isinstance(self._model, type):
@@ -118,11 +150,17 @@ class LinkedRow(t.Sequence[T_Model]):
   Represents a "link row" field. Loads instances of the linked Model on acces.
   """
 
-  def __init__(self, db: 'Database', model: t.Type[T_Model], values: t.List[Ref]) -> None:
+  def __init__(
+    self,
+    db: t.Optional['Database'],
+    model: t.Type[T_Model],
+    values: t.List[Ref],
+    cache: t.Optional[t.Dict[int, T_Model]] = None,
+  ) -> None:
     self._db = db
     self._model = model
     self._refs = values
-    self._cache: t.Dict[int, T_Model] = {}
+    self._cache: t.Dict[int, T_Model] = cache or {}
 
   def __repr__(self) -> str:
     return f'{type(self).__name__}({self._refs!r})'
@@ -137,6 +175,7 @@ class LinkedRow(t.Sequence[T_Model]):
   def __getitem__(self, index: int) -> T_Model:
     if index in self._cache:
       return self._cache[index]
+    assert self._db is not None, 'not attached to a database'
     self._cache[index] = result = self._db._load_single(self._model, self._refs[index].id)
     return result
 

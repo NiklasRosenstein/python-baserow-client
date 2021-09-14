@@ -92,6 +92,22 @@ class Database:
     self._translator.visit(model)
     return Query(self, model)
 
+  def save(self, row: Model) -> None:
+    """
+    Save a model instance as a raw in its backing database. if the *row* has an ID, the method will perform an
+    upadte of the row in Baserow. The #Model.id will be set after creation of a new row.
+    """
+
+    mapping = self._mapping.models[row.__id__]
+    record: t.Dict[str, t.Any] = {}
+    for key, col in row.__columns__.items():
+      record[f'field_{mapping.fields[key]}'] = col.to_baserow(getattr(row, key))
+
+    if row.id is None:
+      row.id = self._client.create_database_table_row(mapping.table_id, record)['id']
+    else:
+      self._client.update_database_table_row(mapping.table_id, row.id, record)
+
 
 class Query(t.Generic[T_Model]):
   """
