@@ -20,3 +20,6 @@ changes:
   description: add `BaserowClient.create_database_table_row()`, `BaserowClient.update_database_table_row()`
     and `Database.save()`
   fixes: []
+- type: feature
+  component: general
+  description: add `BaserowClient.create_user()` (@dermasmid)
