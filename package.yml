@@ -17,4 +17,3 @@ test-drivers:
 - type: mypy
 templates:
 - type: github-actions
-  pypi-publish: true
