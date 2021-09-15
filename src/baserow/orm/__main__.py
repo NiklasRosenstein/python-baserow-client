@@ -33,7 +33,7 @@ def main():
   else:
     parser.error('need at least --user or --jwt')
 
-  models = []
+  models: t.List[t.Union[t.Type[Model], ModelMappingDescription]] = []
   for spec in args.models:
     if ':' in spec:
       model_id, table_name = spec.split(':')

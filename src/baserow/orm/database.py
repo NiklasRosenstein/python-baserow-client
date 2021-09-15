@@ -51,7 +51,7 @@ class Database:
     self._translator = ColumnPlaceholderTranslator(mapping)
 
   def __repr__(self) -> str:
-    return f'Database(db={self._db})'
+    return f'Database(db={self._mapping.database_id})'
 
   def _load_single(self, model: t.Type[T_Model], row_id: int) -> T_Model:
     mapping = self._mapping.models[model.__id__]
@@ -120,9 +120,9 @@ class Query(t.Generic[T_Model]):
     self._model = model
     self._mapping = db._mapping.models[model.__id__]
     self._filters: t.List[Filter] = []
-    self._page_size = None
-    self._paginator: t.Optional[t.Generator[Page[t.Dict[str, str]]]] = None
-    self._page_items: t.Optional[t.Iterator[Page[t.Dict[str, str]]]] = None
+    self._page_size: t.Optional[int] = None
+    self._paginator: t.Optional[t.Iterator[Page[t.Dict[str, str]]]] = None
+    self._page_items: t.Optional[t.Iterator[t.Dict[str, str]]] = None
 
   def __iter__(self) -> 'Query':
     return self

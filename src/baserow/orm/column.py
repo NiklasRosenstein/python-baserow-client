@@ -108,7 +108,7 @@ class ForeignKey(Column):
 
   def from_baserow(self, db: 'Database', value: t.Any) -> t.Any:
     refs = [Ref(x['id'], x['value']) for x in value]
-    return LinkedRow(db, self._model, refs)
+    return LinkedRow(db, self.model, refs)
 
   def to_baserow(self, value: t.Any) -> t.Any:
     assert isinstance(value, LinkedRow)
@@ -119,14 +119,13 @@ class ForeignKey(Column):
       raise TypeError(f'expected collection for column {self.name}')
     value_list = list(value)
     for item in value_list:
-      if not isinstance(item, self._model):
-        raise TypeError(f'expeted {self._model.__id__!r} instance for column {self.name}')
+      if not isinstance(item, self.model):
+        raise TypeError(f'expeted {self.model.__id__!r} instance for column {self.name}')
     # TODO (@NiklasRosenstein): Need to know which is the primary column in the model
-    if value:
-      raise NotImplementedError
-    primary_col = ...
-    refs = [Ref(x.id, getattr(x, primary_col)) for x in value]
-    return LinkedRow(None, self._model, refs, {x.id: x for x in value_list})
+    raise NotImplementedError
+    # primary_col = ...
+    # refs = [Ref(x.id, getattr(x, primary_col)) for x in value]
+    # return LinkedRow(None, self._model, refs, {x.id: x for x in value_list})
 
   @property
   def model(self) -> t.Type['Model']:
@@ -172,7 +171,7 @@ class LinkedRow(t.Sequence[T_Model]):
     for i in range(len(self._refs)):
       yield self[i]
 
-  def __getitem__(self, index: int) -> T_Model:
+  def __getitem__(self, index: int) -> T_Model:  # type: ignore
     if index in self._cache:
       return self._cache[index]
     assert self._db is not None, 'not attached to a database'

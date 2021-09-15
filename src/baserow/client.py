@@ -20,7 +20,7 @@ class ApiError(Exception):
   error: str
   detail: str
 
-  def __str__(self) -> None:
+  def __str__(self) -> str:
     return f'{self.error}: {self.detail}'
 
 
@@ -130,7 +130,7 @@ class BaserowClient(BaseClient):
     self,
     table_id: int,
     exclude: t.Optional[t.List[str]] = None,
-    filter: t.List[t.List[Filter]] = None,
+    filter: t.Optional[t.List[Filter]] = None,
     filter_type: t.Optional[FilterType] = None,
     include: t.Optional[t.List[str]] = None,
     order_by: t.Optional[t.List[str]] = None,
@@ -140,7 +140,7 @@ class BaserowClient(BaseClient):
     user_field_names: bool = False,
   ) -> Page[t.Dict[str, t.Any]]:
 
-    params = {}
+    params: t.Dict[str, t.Optional[str]] = {}
     if exclude is not None:
       params['exclude'] = ','.join(exclude)
     if filter is not None:
@@ -152,13 +152,13 @@ class BaserowClient(BaseClient):
     if order_by is not None:
       params['order_by'] = ','.join(order_by)
     if page is not None:
-      params['page'] = page
+      params['page'] = str(page)
     if search is not None:
       params['search'] = search
     if size is not None:
-      params['size'] = size
+      params['size'] = str(size)
     if user_field_names:
-      params['user_field_names'] = True
+      params['user_field_names'] = 'True'
 
     response = self._request('GET', f'/api/database/rows/table/{table_id}/', params=params).json()
     if page is None:
@@ -247,11 +247,10 @@ class BaserowClient(BaseClient):
     self,
     table_id: int,
     exclude: t.Optional[t.List[str]] = None,
-    filter: t.List[t.List[Filter]] = None,
+    filter: t.Optional[t.List[Filter]] = None,
     filter_type: t.Optional[FilterType] = None,
     include: t.Optional[t.List[str]] = None,
     order_by: t.Optional[t.List[str]] = None,
-    page: t.Optional[int] = None,
     search: t.Optional[str] = None,
     size: t.Optional[int] = None,
     user_field_names: bool = False,

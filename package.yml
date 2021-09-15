@@ -11,3 +11,7 @@ requirements:
 - databind.core ^1.2.1
 - databind.json ^1.2.1
 - typing-extensions ^3.10.0.0
+test-requirements:
+- types-requests ^2.25.6
+test-drivers:
+- type: mypy

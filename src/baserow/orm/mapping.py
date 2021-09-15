@@ -45,7 +45,7 @@ class DatabaseMapping:
   models: t.Dict[str, ModelMapping]
 
   def to_json(self) -> t.Dict[str, t.Any]:
-    return databind.json.dump(self)
+    return databind.json.dump(self)  # type: ignore
 
   @staticmethod
   def from_json(data: t.Dict[str, t.Any]) -> 'DatabaseMapping':
@@ -103,7 +103,7 @@ def generate_mapping(
       raise ValueError(f'table {dbname!r}/{model.table_name!r} does not exist')
 
     table_fields = {f.name: f for f in client.list_database_table_fields(table.id)}
-    fields: t.Dict[str, str] = {}
+    fields: t.Dict[str, int] = {}
     for key, column in model.columns.items():
       name = model.field_name_overrides.get(key) or column.name
       if name not in table_fields:
