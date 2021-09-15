@@ -108,7 +108,7 @@ class BaserowClient(BaseClient):
     template_id: t.Optional[int] = None
   ) -> t.Tuple[User, t.Optional[str]]:
 
-    payload = {'name': name, 'email': email, 'password': password}
+    payload: t.Dict[str, t.Union[str, bool, int]] = {'name': name, 'email': email, 'password': password}
     if authenticate:
       payload['authenticate'] = authenticate
     if group_invitation_token:
