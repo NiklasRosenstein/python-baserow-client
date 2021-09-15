@@ -14,10 +14,13 @@ class Model:
 
   id: t.Optional[int]
   __id__: t.ClassVar[str]
+  __tablename__: t.ClassVar[t.Optional[str]]
   __columns__: t.ClassVar[t.Dict[str, Column]]
 
   def __init_subclass__(cls) -> None:
     cls.__columns__ = {}
+    if '__tablename__' not in vars(cls):
+      cls.__tablename__ = None
 
     if not hasattr(cls, '__id__'):
       cls.__id__ = cls.__module__ + '.' + cls.__name__
@@ -36,12 +39,12 @@ class Model:
     if 'id' in cls.__columns__:
       raise ValueError(f'attribute name "id" is reserved')
 
-  def __init__(self, id: t.Optional[int], **kwargs) -> None:
+  def __init__(self, id: t.Optional[int] = None, **kwargs) -> None:
     self.id = id
     for key, col in self.__columns__.items():
       if key not in kwargs:
         raise TypeError(f'{type(self).__name__}(): missing keyword argument {key!r}')
-      setattr(self, key, kwargs[key])
+      setattr(self, key, col.from_python(kwargs[key]))
     for key in kwargs:
       if key not in self.__columns__:
         raise TypeError(f'{type(self).__name__}(): unrecognized keyword argument {key!r}')

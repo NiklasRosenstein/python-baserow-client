@@ -1,4 +1,5 @@
 
+import copy
 import typing as t
 
 from ..client import BaserowClient
@@ -12,23 +13,42 @@ from .model import Model
 T_Model = t.TypeVar('T_Model', bound='Model')
 
 
+class ColumnPlaceholderTranslator(t.Dict[str, int]):
+  """
+  A helper class that translates #Column.id placeholders to Baserow internal field IDs.
+  """
+
+  def __init__(self, mapping: DatabaseMapping) -> None:
+    self._mapping = mapping
+    self._visited: t.Set[t.Type[Model]] = set()
+
+  def visit(self, model: t.Type[Model]) -> None:
+    """
+    Make the runtime definition of *model* known to the converter. This is needed to ensure that we know the
+    column placeholder IDs and how they are mapped to Baserow internal field IDs.
+    """
+
+    if model not in self._visited:
+      for key, column in model.__columns__.items():
+        self[column.id] = self._mapping.models[model.__id__].fields[key]
+      self._visited.add(model)
+
+
 class Database:
   """
-  Represents a Baserow database.
+  ORM for a Baserow database.
   """
 
   def __init__(self, client: BaserowClient, mapping: DatabaseMapping) -> None:
     """
     # Arguments
     client: The Baserow client to interact with.
-    db: The ID of the database.
+    mapping: A previously generated mapping for the database, it's tables and internal field IDs.
     """
 
     self._client = client
     self._mapping = mapping
-
-    self._internal_column_configured: t.Set[str] = set()
-    self._internal_column_id_to_field_id: t.Dict[str, int] = {}
+    self._translator = ColumnPlaceholderTranslator(mapping)
 
   def __repr__(self) -> str:
     return f'Database(db={self._db})'
@@ -50,26 +70,50 @@ class Database:
         continue
       attr_name = mapping.reverse_fields[field_id]
       column = model.__columns__[attr_name]
-      if isinstance(column, ForeignKey):
-        value = LinkedTableCollection(self, column.model, column, [LinkedTableCollection._RawValue(x['id'], x['value']) for x in value])
-      record[attr_name] = value
-
+      record[attr_name] = column.from_baserow(self, value)
     return model(record_id, **record)
 
   def _preprocess_filter(self, filter: Filter) -> Filter:
-    if filter.field in self._internal_column_id_to_field_id:
-      filter.field = f'field_{self._internal_column_id_to_field_id[filter.field]}'
+    """
+    Internal. Called by the #Query to replace column placeholders with Baserow internal field IDs.
+    """
+
+    if filter.field in self._translator:
+      filter = copy.copy(filter)
+      filter.field = f'field_{self._translator[filter.field]}'
+
     return filter
 
   def select(self, model: t.Type[T_Model]) -> 'Query[T_Model]':
-    if model.__id__ not in self._internal_column_configured:
-      for key, column in model.__columns__.items():
-        self._internal_column_id_to_field_id[column.id] = self._mapping.models[model.__id__].fields[key]
-      self._internal_column_configured.add(model.__id__)
+    """
+    Create a new #Query for rows of the given model.
+    """
+
+    self._translator.visit(model)
     return Query(self, model)
+
+  def save(self, row: Model) -> None:
+    """
+    Save a model instance as a raw in its backing database. if the *row* has an ID, the method will perform an
+    upadte of the row in Baserow. The #Model.id will be set after creation of a new row.
+    """
+
+    mapping = self._mapping.models[row.__id__]
+    record: t.Dict[str, t.Any] = {}
+    for key, col in row.__columns__.items():
+      record[f'field_{mapping.fields[key]}'] = col.to_baserow(getattr(row, key))
+
+    if row.id is None:
+      row.id = self._client.create_database_table_row(mapping.table_id, record)['id']
+    else:
+      self._client.update_database_table_row(mapping.table_id, row.id, record)
 
 
 class Query(t.Generic[T_Model]):
+  """
+  Represents a query for the rows of a particular model. A query can be modified until it is executed,
+  after which it becomes immutable. Iterating over a query yields all matching rows as model instances.
+  """
 
   def __init__(self, db: Database, model: t.Type[T_Model]) -> None:
     self._db = db
@@ -104,66 +148,47 @@ class Query(t.Generic[T_Model]):
       self._mapping.table_id,
       filter=self._filters)
 
+  @property
+  def executed(self) -> bool:
+    """
+    Returns #True if the query has been executed.
+    """
+
+    return self._paginator is not None
+
   def filter(self, *filters: Filter) -> 'Query[T_Model]':
-    if self._paginator is not None:
-      raise RuntimeError('Query has already been evaluated')
+    """
+    Filter the query with the specified filters. This method modified the query.
+    """
+
+    if self.executed:
+      raise RuntimeError('Query has already been executed')
     for filter in filters:
       self._filters.append(self._db._preprocess_filter(filter))
     return self
 
   def page_size(self, page_size: int) -> 'Query[T_Model]':
-    if self._paginator is not None:
-      raise RuntimeError('Query has already been evaluated')
+    """
+    Set the number of rows to return per call to the Baserow API. This method modified the query.
+    """
+
+    if self.executed:
+      raise RuntimeError('Query has already been executed')
     self._page_size = page_size
     return self
 
   def first(self) -> T_Model:
     """
-    Returns the first object from the query, or raises a #NoRowReturned exception.
+    Return the first row from the query. This method executes the query.
+
+    If the query returns no rows, a #NoRowReturned exception will be raised instead.
     """
 
-    if self._paginator is not None:
-      raise RuntimeError('Query has already been evaluated')
+    if self.executed:
+      raise RuntimeError('Query has already been executed')
 
     self.page_size(1)
     try:
       return next(self)
     except StopIteration:
       raise NoRowReturned
-
-
-class LinkedTableCollection(t.Sequence[T_Model]):
-  """
-  This class is used as the value for #LinkColumn#s.
-  """
-
-  class _RawValue(t.NamedTuple):
-    id: int
-    value: ValueType
-
-  def __init__(self, db: Database, model: t.Type[T_Model], column: ForeignKey, values: t.List[_RawValue]) -> None:
-    self._db = db
-    self._model = model
-    self._column = column
-    self._values = values
-    self._cache: t.Dict[int, T_Model] = {}
-
-  def __repr__(self) -> str:
-    return f'{type(self).__name__}({self._values!r})'
-
-  def __len__(self) -> int:
-    return len(self._values)
-
-  def __iter__(self) -> t.Iterator[T_Model]:
-    for i in range(len(self._values)):
-      yield self[i]
-
-  def __getitem__(self, index: int) -> T_Model:
-    if index in self._cache:
-      return self._cache[index]
-    self._cache[index] = result = self._db._load_single(self._model, self._values[index].id)
-    return result
-
-  @property
-  def raw(self) -> t.List[_RawValue]:
-    return self._raw
