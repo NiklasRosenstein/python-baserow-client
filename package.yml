@@ -18,3 +18,10 @@ test-drivers:
 templates:
 - type: github-actions
   pypi-publish: true
+publish:
+  pypi:
+    credentials:
+      username: __token__
+      password: '$PYPI_TOKEN'
+      test_username: __token__
+      test_password: '$TESTPYPI_TOKEN'
