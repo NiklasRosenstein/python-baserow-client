@@ -28,3 +28,27 @@ jobs:
       run: shut pkg checks
     - name: Run unit tests and type checks
       run: shut pkg test --install --isolate --no-capture
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.8"
+    - name: Install dependencies
+      run: python -m pip install shut==0.19.0 mkdocs -q
+    - name: Generate docs
+      run: |
+        cd docs
+        echo "# Changelog" >src/changelog.md
+        shut changelog -a --markdown >>src/changelog.md
+        mkdocs build
+    - name: Publish docs
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      if: github.ref == 'refs/heads/develop'
+      with:
+        branch: gh-pages
+        folder: docs/site
+        ssh-key: ${{ secrets.DEPLOY_KEY }}
