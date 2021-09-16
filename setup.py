@@ -29,7 +29,7 @@ extras_require['test'] = test_requirements
 
 setuptools.setup(
   name = 'baserow-client',
-  version = '0.3.0',
+  version = '0.4.0',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Client for the baserow.io API.',
