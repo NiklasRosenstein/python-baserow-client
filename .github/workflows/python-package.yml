@@ -41,9 +41,9 @@ jobs:
       run: python -m pip install shut==0.19.0 mkdocs -q
     - name: Generate docs
       run: |
+        echo "# Changelog" >docs/src/changelog.md
+        shut changelog -a --markdown >>docs/src/changelog.md
         cd docs
-        echo "# Changelog" >src/changelog.md
-        shut changelog -a --markdown >>src/changelog.md
         mkdocs build
     - name: Publish docs
       uses: JamesIves/github-pages-deploy-action@4.1.4
