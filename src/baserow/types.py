@@ -19,6 +19,7 @@ class User:
   first_name: str
   username: str
   is_staff: bool
+  language: str
 
 
 @dataclasses.dataclass
