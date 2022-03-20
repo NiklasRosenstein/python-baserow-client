@@ -1,0 +1,9 @@
+template "mkdocs"
+
+action "mkdocs-update-config" {
+  site_name = "python-baserow-client"
+}
+
+action "preprocess-markdown" {
+  use "pydoc"
+}

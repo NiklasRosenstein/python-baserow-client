@@ -1,5 +1,1 @@
-site_name: python-baserow-client
-repo_url: https://github.com/NiklasRosenstein/python-baserow-client
-docs_dir: src
-markdown_extensions: [ fenced_code ]
-theme: { name: readthedocs }
+{}
