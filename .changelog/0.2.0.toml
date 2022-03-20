@@ -1,0 +1,31 @@
+release-date = "2021-09-13"
+
+[[entries]]
+id = "c14ec22d-abbb-4f8f-b11c-bc2cd400f36d"
+type = "feature"
+description = "add `BaserowClient.login()`, `BaserowClient.load()` and `BaserowClient.save()`"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "db195fd0-628b-4a13-a4ab-4181202276e3"
+type = "feature"
+description = "support `boolean`, `long_text` and `file` fields"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "d17072bb-43ca-4331-b8a0-ad950852c8e0"
+type = "feature"
+description = "add simple ORM capabilities"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "8fc3ea6a-1a0b-4c1e-87b8-96f1397924b9"
+type = "feature"
+description = "add `BaserowClient.get_database_table_row()`"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "5a49baa1-c81f-472f-a7b3-f7bc03088cb9"
+type = "feature"
+description = "add `Column.link_row_has()` and `Column.link_row_has_not()`"
+author = "rosensteinniklas@gmail.com"

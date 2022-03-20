@@ -1,0 +1,7 @@
+release-date = "2021-09-13"
+
+[[entries]]
+id = "55e77150-f9f4-4558-94f6-f1a3eb686b6f"
+type = "feature"
+description = "add `Query.first()`, `BaserowOrmException` and `NoRowReturned`"
+author = "rosensteinniklas@gmail.com"

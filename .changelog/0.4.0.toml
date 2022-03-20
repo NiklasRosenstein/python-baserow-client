@@ -1,0 +1,37 @@
+release-date = "2021-09-16"
+
+[[entries]]
+id = "21b3a2c1-6abb-4f55-99c9-283ea2d56382"
+type = "improvement"
+description = "rename `LinkedTableCollection` to `LinkedRow` and moved it to `baserow.orm.column`"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "e18131a5-4c19-4a15-8226-e1a5ce8a8b90"
+type = "improvement"
+description = "add `Column.from_baserow()`"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "acf57de3-99e4-411b-8d95-d6f51788bae3"
+type = "improvement"
+description = "add `ColumnPlaceholderTranslator` helper class"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "678633c6-84f6-403a-aabe-2a04af1af709"
+type = "docs"
+description = "add a bunch of docstrings to the ORM classes"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "483ab349-5b4f-4ba1-aed6-5c0d23c60a40"
+type = "feature"
+description = "add `BaserowClient.create_database_table_row()`, `BaserowClient.update_database_table_row()` and `Database.save()`"
+author = "rosensteinniklas@gmail.com"
+
+[[entries]]
+id = "23282027-d438-4ff7-b9cc-a61d413cb426"
+type = "feature"
+description = "add `BaserowClient.create_user()`"
+author = "@dermasmid"

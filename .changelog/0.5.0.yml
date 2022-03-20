@@ -1,7 +1,0 @@
-changes:
-- type: feature
-  component: general
-  description: add `User.language` field (@dretay)
-  fixes:
-  - '#6'
-release_date: '2021-10-22'

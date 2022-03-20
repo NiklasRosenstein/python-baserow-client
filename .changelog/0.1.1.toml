@@ -1,0 +1,7 @@
+release-date = "2021-09-12"
+
+[[entries]]
+id = "2d3d58d8-d731-4c4a-9dde-b98d0d5cc4c6"
+type = "fix"
+description = "add missing dependencies"
+author = "rosensteinniklas@gmail.com"

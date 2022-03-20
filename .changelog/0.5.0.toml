@@ -1,0 +1,10 @@
+release-date = "2021-10-22"
+
+[[entries]]
+id = "74e7002b-279f-493b-a08b-3d18c0abb24b"
+type = "feature"
+description = "add `User.language` field"
+author = "@dretay"
+issues = [
+    "https://github.com/NiklasRosenstein/python-baserow-client/issues/6",
+]

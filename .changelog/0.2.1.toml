@@ -1,0 +1,7 @@
+release-date = "2021-09-13"
+
+[[entries]]
+id = "14b30bed-0230-4bcd-9c0e-37b6d3140cec"
+type = "fix"
+description = "fix readme example"
+author = "rosensteinniklas@gmail.com"
