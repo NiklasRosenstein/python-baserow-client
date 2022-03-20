@@ -21,7 +21,6 @@ jobs:
     - uses: NiklasRosenstein/slam@github-action/install/v1
     - uses: actions/setup-python@v2
       with: { python-version: "${{ matrix.python-version }}" }
-    - run: slam info
     - run: slam install --link --no-venv-check
     - run: slam test
 
