@@ -1,4 +1,3 @@
 # Changelog
 
-@shell cd .. && slam changelog format --all --markdown
-
+@shell cd .. && slap changelog format --all --markdown

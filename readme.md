@@ -1,4 +1,3 @@
-
 # baserow-client
 
 A Python client for [Baserow.io](https://baserow.io/) with simple ORM capabilities.

@@ -34,13 +34,17 @@ types-requests = "^2.25.6"
 [tool.poetry.extras]
 docs = ["novella==0.1.14", "pydoc-markdown==0.4.6", "mkdocs", "mkdocs-material"]
 
-[tool.slam]
+[tool.slap]
 typed = true
 
-[tool.slam.test]
-check = "slam check"
+[tool.slap.test]
+check = "slap check"
 mypy = "MYPYPATH=src mypy src/ --namespace-packages --explicit-package-bases"
 pytest = "pytest test/ -vv"
+
+[tool.slap.run]
+"docs:build" = "cd docs && novella --base-url python-baserow-client/"
+"docs:dev" = "cd docs && novella --serve"
 
 [tool.mypy]
 pretty = true
