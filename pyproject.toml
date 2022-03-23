@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "baserow-client"
-version = "0.5.0"
+version = "0.5.1"
 description = "Client for the baserow.io API."
 authors = ["Niklas Rosenstein <rosensteinniklas@gmail.com>"]
 license = "MIT"
