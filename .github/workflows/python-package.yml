@@ -4,11 +4,8 @@
 name: "Python Package"
 
 on:
-  push:
-    branches: [ "develop" ]
-    tags: [ '*' ]
-  pull_request:
-    branches: [ "develop" ]
+  push: { branches: [ "develop" ], tags: [ "*"" ] }
+  pull_request: { branches: [ "develop" ] }
 
 jobs:
   test:
@@ -18,20 +15,27 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.x"]
     steps:
     - uses: actions/checkout@v2
-    - uses: NiklasRosenstein/slam@github-action/install/v1
+    - uses: NiklasRosenstein/slap@gha/install/v1
     - uses: actions/setup-python@v2
       with: { python-version: "${{ matrix.python-version }}" }
-    - run: slam install --link --no-venv-check
-    - run: slam test
+    - run: slap install --link --no-venv-check
+    - run: slap test
 
   documentation:
     runs-on: ubuntu-latest
     needs: test
     steps:
     - uses: actions/checkout@v2
-    - uses: NiklasRosenstein/slam@github-action/install/v1
-    - run: slam install --only-extras docs
-    - run: slam run docs:build
+    - uses: NiklasRosenstein/slap@gha/install/v1
+    - run: slap install --only-extras docs --no-venv-check
+    - run: slap run docs:build
     - uses: JamesIves/github-pages-deploy-action@4.1.4
       if: github.ref == 'refs/heads/develop'
       with: { branch: gh-pages, folder: docs/site, ssh-key: "${{ secrets.DEPLOY_KEY }}" }
+
+  update-changelog:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: NiklasRosenstein/slap@gha/changelog/update/v1
