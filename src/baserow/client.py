@@ -132,19 +132,19 @@ class BaserowClient(BaseClient):
     return databind.json.load(response, t.List[Application])
 
   def get_database_table(self, table_id: int) -> Table:
-    response = self._request('GET', f'/api/database/tables/{table_id}').json()
+    response = self._request('GET', f'/api/database/tables/{table_id}/').json()
     return databind.json.load(response, Table)
 
   def update_database_table(self, table_id: int, name: str) -> Table:
-    response = self._request('PATCH', f'/api/database/tables/{table_id}', json={'name': name}).json()
+    response = self._request('PATCH', f'/api/database/tables/{table_id}/', json={'name': name}).json()
     return databind.json.load(response, Table)
 
   def list_database_tables(self, database_id: int) -> t.List[Table]:
-    response = self._request('GET', f'/api/database/tables/database/{database_id}').json()
+    response = self._request('GET', f'/api/database/tables/database/{database_id}/').json()
     return databind.json.load(response, t.List[Table])
 
   def list_database_table_fields(self, table_id: int) -> t.List[TableField]:
-    response = self._request('GET', f'/api/database/fields/table/{table_id}').json()
+    response = self._request('GET', f'/api/database/fields/table/{table_id}/').json()
     return databind.json.load(response, t.List[TableField])
 
   def list_database_table_rows(
