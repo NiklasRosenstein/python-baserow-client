@@ -27,6 +27,10 @@ class Group:
   id: int
   name: str
 
+@dataclasses.dataclass
+class Workspace:
+  id: int
+  name: str
 
 @dataclasses.dataclass
 class OrderedGroup(Group):
@@ -63,6 +67,7 @@ class Application:
   order: int
   type: str
   group: Group
+  workspace: Workspace
   tables: t.List[Table]
 
 
