@@ -66,9 +66,9 @@ class Application:
   name: str
   order: int
   type: str
-  group: t.Optional[Group]
   workspace: Workspace
   tables: t.List[Table]
+  group: t.Optional[Group] = None  
 
 
 @dataclasses.dataclass
