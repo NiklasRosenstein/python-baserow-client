@@ -3,7 +3,7 @@ import dataclasses
 import enum
 import typing as t
 
-from databind.core.annotations import union
+from databind.core.settings import Union
 
 from .types import TableField
 
@@ -20,18 +20,18 @@ class SelectOption:
   color: str
 
 
-@union.subtype(TableField, 'text')
+@Union.register(TableField, 'text')
 @dataclasses.dataclass
 class TextTableField(TableField):
   text_default: str
 
 
-@union.subtype(TableField, 'long_text')
+@Union.register(TableField, 'long_text')
 @dataclasses.dataclass
 class LongTextTableField(TableField): pass
 
 
-@union.subtype(TableField, 'number')
+@Union.register(TableField, 'number')
 @dataclasses.dataclass
 class NumberTableField(TableField):
   number_decimal_places: int
@@ -39,30 +39,30 @@ class NumberTableField(TableField):
   number_type: NumberType
 
 
-@union.subtype(TableField, 'single_select')
+@Union.register(TableField, 'single_select')
 @dataclasses.dataclass
 class SingleSelectTableField(TableField):
   select_options: t.List[SelectOption]
 
 
-@union.subtype(TableField, 'url')
+@Union.register(TableField, 'url')
 @dataclasses.dataclass
 class UrlTableField(TableField):
   pass
 
 
-@union.subtype(TableField, 'link_row')
+@Union.register(TableField, 'link_row')
 @dataclasses.dataclass
 class LinkRowTableField(TableField):
   link_row_table: int
   link_row_related_field: int
 
 
-@union.subtype(TableField, 'boolean')
+@Union.register(TableField, 'boolean')
 @dataclasses.dataclass
 class BooleanTableField(TableField): pass
 
 
-@union.subtype(TableField, 'file')
+@Union.register(TableField, 'file')
 @dataclasses.dataclass
 class FileTableField(TableField): pass

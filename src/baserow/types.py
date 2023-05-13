@@ -3,7 +3,7 @@ import dataclasses
 import enum
 import typing as t
 
-from databind.core.annotations import union
+from databind.core.settings import Union
 
 T = t.TypeVar('T')
 
@@ -50,7 +50,7 @@ class Table:
   database_id: int
 
 
-@union(style=union.Style.flat, constructible=True)
+@Union(style=Union.FLAT)
 @dataclasses.dataclass
 class TableField:
   id: int
@@ -68,7 +68,7 @@ class Application:
   type: str
   workspace: Workspace
   tables: t.List[Table]
-  group: t.Optional[Group] = None  
+  group: t.Optional[Group] = None
 
 
 @dataclasses.dataclass

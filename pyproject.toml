@@ -22,8 +22,8 @@ Homepage = "https://github.com/NiklasRosenstein/python-baserow-client"
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.26.0"
-"databind.core" = "^1.2.1"
-"databind.json" = "^1.2.1"
+"databind.core" = "^4.2.5"
+"databind.json" = "^4.2.5"
 typing-extensions = ">=3.0.0"
 
 [tool.poetry.dev-dependencies]
