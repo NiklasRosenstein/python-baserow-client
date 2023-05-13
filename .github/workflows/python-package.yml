@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: NiklasRosenstein/slap@gha/changelog/update/v3
-        with: { version: '*', ref: 'nr/update-changelog-update' }
+        with: { version: '*', ref: 'nr/update-changelog-update', github_token: '${{ secrets.GITHUB_TOKEN }}' }
 
   assert-new-changelog-entries:
     name: "Assert that new changelog entries have been added"
