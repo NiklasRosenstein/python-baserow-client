@@ -49,4 +49,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: NiklasRosenstein/slap@gha/changelog/assert-added/v2
-        with: { version: '*' }
+        with: { version: '*', ref: 'nr/update-changelog-update', pr-id: '${{ github.event.pull_request.number }}' }
