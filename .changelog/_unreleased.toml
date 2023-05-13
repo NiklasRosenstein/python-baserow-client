@@ -4,3 +4,10 @@ type = "improvement"
 description = "add support for baserow 1.16.0 workspaces, trailing slashes on urls"
 author = "@luc-languagetools"
 pr = "https://github.com/NiklasRosenstein/python-baserow-client/pull/7"
+
+[[entries]]
+id = "89797d82-9b18-4bd7-82ba-17b1ecb85123"
+type = "improvement"
+description = "Upgrade from `databind 1.x` to `4.x`"
+author = "@NiklasRosenstein"
+pr = "https://github.com/NiklasRosenstein/python-baserow-client/pull/8"
