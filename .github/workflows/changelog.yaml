@@ -3,24 +3,23 @@
 # - Insert the Pull Request URL into new changelog entries.
 # - Assert that a new changelog entry has been added in the PR unless a "no changelog" label is added to the PR.
 
-name: "Validate changelogs"
+name: "Changelog"
 
 on:
   pull_request_target: { branches: [ "develop" ] }
 
 jobs:
   changelog-update:
-    name: "Insert the Pull Request URL into new changelog entries"
+    name: "Insert Pull Request URL into new changelog entries"
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request_target'
     steps:
       - uses: actions/checkout@v2
-      - run: cat .changelog/_unreleased.toml
       - uses: NiklasRosenstein/slap@gha/changelog/update/v2
         with: { version: '*', ref: 'nr/update-changelog-update', pr-id: '${{ github.event.pull_request.number }}' }
 
   assert-new-changelog-entries:
-    name: "Assert that new changelog entries have been added"
+    name: "At least one new changelog entry must be added"
     runs-on: ubuntu-latest
     if: github.base_ref != '' && !contains(github.event.pull_request.labels.*.name, 'no changelog')
     steps:
