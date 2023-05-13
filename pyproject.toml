@@ -31,8 +31,14 @@ mypy = "*"
 pytest = "*"
 types-requests = "^2.25.6"
 
-[tool.poetry.extras]
-docs = ["novella==0.1.14", "pydoc-markdown==0.4.6", "mkdocs", "mkdocs-material"]
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+novella = "^0.1.14"
+pydoc-markdown = "^4.6.0"
+mkdocs = "*"
+mkdocs-material = "*"
 
 [tool.slap]
 typed = true

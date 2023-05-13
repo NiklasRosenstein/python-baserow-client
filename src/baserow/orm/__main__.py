@@ -20,7 +20,7 @@ parser.add_argument('--jwt', help='A JWT to use instead of generating a new one 
 parser.add_argument('--write-to', help='The path to write the generated mappings to. If not specified, will be stdout.')
 
 
-def main():
+def main() -> None:
   args = parser.parse_args()
   client = BaserowClient(args.url)
 

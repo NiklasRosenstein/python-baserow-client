@@ -1,4 +1,4 @@
-name: "Python Package"
+name: "Python"
 
 on:
   push: { branches: [ "develop" ], tags: [ "*" ] }
@@ -24,8 +24,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: NiklasRosenstein/slap@gha/install/v1
-    - run: slap install --only-extras docs --no-venv-check
-    - run: slap run docs:build
+    - run: slap install --no-venv-check --only-extras docs
+    - run: slap run --no-venv-check docs:build
     - uses: JamesIves/github-pages-deploy-action@4.1.4
       if: github.ref == 'refs/heads/develop'
       with: { branch: gh-pages, folder: docs/site, ssh-key: "${{ secrets.DEPLOY_KEY }}" }

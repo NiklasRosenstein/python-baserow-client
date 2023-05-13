@@ -2,7 +2,6 @@ template "mkdocs"
 
 action "mkdocs-update-config" {
   site_name = "python-baserow-client"
-  profile = "readthedocs"
 }
 
 action "preprocess-markdown" {
