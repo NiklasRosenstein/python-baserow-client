@@ -37,7 +37,6 @@ jobs:
     name: "Insert the Pull Request URL into new changelog entries"
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    permissions: write-all
     steps:
       - uses: actions/checkout@v2
       - uses: NiklasRosenstein/slap@gha/changelog/update/v3
@@ -51,3 +50,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: NiklasRosenstein/slap@gha/changelog/assert-added/v2
         with: { version: '*' }
+        permissions:
+          pull-requests: write
