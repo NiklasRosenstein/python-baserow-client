@@ -1,4 +1,4 @@
-name: "Python Package"
+name: "Python"
 
 on:
   push: { branches: [ "develop" ], tags: [ "*" ] }
