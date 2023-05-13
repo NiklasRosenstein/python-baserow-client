@@ -29,6 +29,7 @@ typing-extensions = ">=3.0.0"
 [tool.poetry.dev-dependencies]
 mypy = "*"
 pytest = "*"
+pycln = "^2.1.3"
 types-requests = "^2.25.6"
 
 [tool.poetry.group.docs]
@@ -46,7 +47,8 @@ typed = true
 [tool.slap.test]
 check = "slap check"
 mypy = "MYPYPATH=src mypy src/ --namespace-packages --explicit-package-bases"
-pytest = "pytest test/ -vv"
+pytest = "pytest src/ test/ -vv"
+pycln  = "pycln src/ tests/ --check"
 
 [tool.slap.run]
 "docs:build" = "cd docs && novella --base-url python-baserow-client/"
