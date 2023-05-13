@@ -36,7 +36,7 @@ jobs:
   changelog-update:
     name: "Insert the Pull Request URL into new changelog entries"
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request_target'
     steps:
       - uses: actions/checkout@v2
       - uses: NiklasRosenstein/slap@gha/changelog/update/v2
