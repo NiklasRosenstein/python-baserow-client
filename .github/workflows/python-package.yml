@@ -4,7 +4,7 @@
 name: "Python Package"
 
 on:
-  push: { branches: [ "develop" ], tags: [ "*"" ] }
+  push: { branches: [ "develop" ], tags: [ "*" ] }
   pull_request: { branches: [ "develop" ] }
 
 jobs:
