@@ -41,6 +41,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: NiklasRosenstein/slap@gha/changelog/update/v2
         with: { version: '*', ref: 'nr/update-changelog-update' }
+    permissions: write-all
 
   assert-new-changelog-entries:
     name: "Assert that new changelog entries have been added"
