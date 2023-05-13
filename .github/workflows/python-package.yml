@@ -39,6 +39,19 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v2
+
+      - name: Create comment test
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
+
+            [1]: https://github.com/peter-evans/create-or-update-comment
+          reactions: '+1'
+
       - uses: NiklasRosenstein/slap@gha/changelog/update/v2
         with: { version: '*', ref: 'nr/update-changelog-update' }
     permissions: write-all
