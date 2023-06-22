@@ -4,6 +4,7 @@ import enum
 import typing as t
 
 from databind.core.settings import Union
+from databind.core import ExtraKeys
 
 from .types import TableField
 
@@ -38,10 +39,25 @@ class NumberTableField(TableField):
   number_negative: bool
   number_type: NumberType
 
+@Union.register(TableField, 'date')
+@dataclasses.dataclass
+class DateTableField(TableField):
+  date_force_timezone: str
+  date_format: str
+  date_include_time: bool
+  date_show_tzinfo: bool
+  date_time_format: str
+
 
 @Union.register(TableField, 'single_select')
 @dataclasses.dataclass
 class SingleSelectTableField(TableField):
+  select_options: t.List[SelectOption]
+
+
+@Union.register(TableField, 'multiple_select')
+@dataclasses.dataclass
+class MultipleSelectTableField(TableField):
   select_options: t.List[SelectOption]
 
 
@@ -66,3 +82,11 @@ class BooleanTableField(TableField): pass
 @Union.register(TableField, 'file')
 @dataclasses.dataclass
 class FileTableField(TableField): pass
+
+
+@Union.register(TableField, 'formula')
+@ExtraKeys()
+@dataclasses.dataclass
+class FormulaTableField(TableField):
+  formula: str
+  formula_type: str
